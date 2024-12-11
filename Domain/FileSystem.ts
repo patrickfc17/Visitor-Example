@@ -1,34 +1,37 @@
-const privilegios = {
-  all: '*',
-  root: 'root',
-  user: 'user:',
-} as const
+import { Getter } from 'tslombok'
+import type {
+  Privilegio,
+  Privilegios,
+  TiposPrivilegio,
+} from './types/privilegios'
 
-type Privilegio = keyof typeof privilegios
+export abstract class FileSystem<
+  TPrivilegio extends TiposPrivilegio = Privilegio<'all'>,
+  TUsersAccepted extends string = never,
+  TUsersMaxLength extends number = never,
+> {
+  @Getter
+  private oculto: boolean
 
-abstract class FileSystem {
-  private _oculto = false
+  @Getter
+  private nome: string
 
-  constructor(private _nome: string, private _privilegio: Privilegio = 'all') {
-    this._oculto = this._nome.startsWith('.') ? true : false
-  }
+  @Getter
+  private privilegio: Privilegios<TPrivilegio, TUsersAccepted, TUsersMaxLength>
 
-  get nome() {
-    return this._nome
-  }
-
-  get oculto() {
-    return this._oculto
-  }
-
-  get privilegio() {
-    return this._privilegio
+  constructor(
+    nome: string,
+    privilegio: Privilegios<TPrivilegio, TUsersAccepted, TUsersMaxLength>,
+  ) {
+    this.nome = nome
+    this.privilegio = privilegio
+    this.oculto = this.nome.startsWith('.') ? true : false
   }
 
   renomear(nome: string): void {
-    this._nome = nome
+    this.nome = nome
+    this.oculto = this.nome.startsWith('.') ? true : false
   }
-}
 
-export { FileSystem, privilegios }
-export type { Privilegio }
+  abstract get tamanho(): string
+}

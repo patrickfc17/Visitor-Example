@@ -1,21 +1,38 @@
+import { Getter } from 'tslombok'
 import { Host } from '../Contracts/Host'
 import { Visitor } from '../Contracts/Visitor'
 import { calloc } from '../lib/memory'
-import { FileSystem, Privilegio } from './FileSystem'
+import { FileSystem } from './FileSystem'
+import { Privilegios, TiposPrivilegio } from './types/privilegios'
 
-export class File extends FileSystem implements Host {
+export class File<
+    TPrivilegio extends TiposPrivilegio = any,
+    TUsersAccepted extends string = never,
+    TUsersMaxLength extends number = any,
+  >
+  extends FileSystem<TPrivilegio, TUsersAccepted, TUsersMaxLength>
+  implements Host
+{
   private tamanhoEmBytes: number
-  private inicioPagina: number
-  private fimPagina: number
+
+  @Getter
+  private readonly inicioPagina: number
+
+  @Getter
+  private readonly fimPagina: number
+
+  @Getter
+  private conteudo: string
 
   constructor(
     nome: string,
-    private _conteudo: string,
-    privilegio: Privilegio = 'all'
+    conteudo: string,
+    privilegio: Privilegios<TPrivilegio, TUsersAccepted, TUsersMaxLength>,
   ) {
     super(nome, privilegio)
 
-    this.tamanhoEmBytes = this._conteudo.length
+    this.conteudo = conteudo
+    this.tamanhoEmBytes = this.conteudo.length
 
     const { start, end } = calloc(1, this.tamanhoEmBytes)
     this.inicioPagina = start
@@ -27,6 +44,6 @@ export class File extends FileSystem implements Host {
   }
 
   get tamanho() {
-    return `${(this.tamanhoEmBytes / (1024)).toFixed(2)} KB`
+    return `${(this.tamanhoEmBytes / 1024).toFixed(2)} KB`
   }
 }

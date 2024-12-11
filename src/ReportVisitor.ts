@@ -3,25 +3,24 @@ import { Directory } from '../Domain/Directory'
 import { File } from '../Domain/File'
 
 export class ReportVisitor implements Visitor {
-  private static instance: ReportVisitor | null
+  private static _instance: ReportVisitor | null
 
   private constructor() {}
 
-  static getInstance(): ReportVisitor {
-    if (!ReportVisitor.instance)
-      ReportVisitor.instance = new ReportVisitor()
+  static instance(): ReportVisitor {
+    if (!ReportVisitor._instance) ReportVisitor._instance = new ReportVisitor()
 
-    return ReportVisitor.instance
+    return ReportVisitor._instance
   }
 
   visitFile(file: File): void {
-    if (file.oculto) return
+    if (file.getOculto()) return
 
-    console.log(`\t- ${file.nome} ${file.tamanho}`)
+    console.log(`\t- ${file.getNome()} ${file.tamanho}`)
   }
 
   visitDir(directory: Directory): void {
-    console.log(`-- ${directory.nome} ${directory.tamanho} KB`)
+    console.log(`-- ${directory.getNome()} ${directory.tamanho} KB`)
 
     directory.files.forEach(file => file.accept(this))
   }
