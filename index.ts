@@ -3,7 +3,7 @@ import { Directory } from './Domain/Directory'
 import { File } from './Domain/File'
 import { Privilegio, privilegiosEnum } from './Domain/types/privilegios'
 import { ReportVisitor } from './src/ReportVisitor'
-import { GithubAPI, GithubUser } from './src/api/github'
+import { GithubAPI, GithubUser } from './src/api/Github'
 
 let users: Awaited<Promise<GithubUser[]>> | string[] =
   await new GithubAPI().getUsers()
