@@ -19,7 +19,7 @@ app.get(`/api/${env.API_VERSION}/directories`, async (req, res) => {
   let data =
     await DirectoryService.DirectoryService.DirectoryServicePortType.GetDirectories(
       {},
-      (_, directores, __, ___, ____) => json2xml(directores)
+      (_, directories, __, ___, ____) => json2xml(directories)
     )
 
   data = service
