@@ -8,7 +8,7 @@ import type {
 export abstract class FileSystem<
   TPrivilegio extends TiposPrivilegio = Privilegio<'all'>,
   TUsersAccepted extends string = never,
-  TUsersMaxLength extends number = never,
+  TUsersMaxLength extends number = never
 > {
   @Getter
   private oculto: boolean
@@ -17,14 +17,14 @@ export abstract class FileSystem<
   private nome: string
 
   @Getter
-  private privilegio: Privilegios<TPrivilegio, TUsersAccepted, TUsersMaxLength>
+  private privilegios: Privilegios<TPrivilegio, TUsersAccepted, TUsersMaxLength>
 
   constructor(
     nome: string,
-    privilegio: Privilegios<TPrivilegio, TUsersAccepted, TUsersMaxLength>,
+    privilegios: Privilegios<TPrivilegio, TUsersAccepted, TUsersMaxLength>
   ) {
     this.nome = nome
-    this.privilegio = privilegio
+    this.privilegios = privilegios
     this.oculto = this.nome.startsWith('.') ? true : false
   }
 
@@ -33,5 +33,5 @@ export abstract class FileSystem<
     this.oculto = this.nome.startsWith('.') ? true : false
   }
 
-  abstract get tamanho(): string
+  abstract get tamanho(): number
 }

@@ -1,6 +1,11 @@
-import { Visitor } from '../Contracts/Visitor'
+import { DirInfo, FileSystemInfo, Visitor } from '../Contracts/Visitor'
 import { Directory } from '../Domain/Directory'
 import { File } from '../Domain/File'
+import {
+  Privilegios,
+  PrivilegiosUserList,
+  TiposPrivilegio,
+} from '../Domain/types/privilegios'
 
 export class ReportVisitor implements Visitor {
   private static _instance: ReportVisitor | null
@@ -13,15 +18,32 @@ export class ReportVisitor implements Visitor {
     return ReportVisitor._instance
   }
 
-  visitFile(file: File): void {
-    if (file.getOculto()) return
+  visitFile(
+    file: File<TiposPrivilegio, string, number>
+  ): FileSystemInfo | null {
+    if (file.getOculto()) return null
 
-    console.log(`\t- ${file.getNome()} ${file.tamanho}`)
+    return {
+      name: file.getNome(),
+      sizeInKB: file.tamanho,
+    }
   }
 
-  visitDir(directory: Directory): void {
-    console.log(`-- ${directory.getNome()} ${directory.tamanho} KB`)
+  visitDir(directory: Directory<TiposPrivilegio, string, number>): DirInfo {
+    const privilegios: Privilegios<TiposPrivilegio, string, number> =
+      directory.getPrivilegios()
+    let privilegiosList: PrivilegiosUserList<string, number>
 
-    directory.files.forEach(file => file.accept(this))
+    if (typeof privilegios === 'object') privilegiosList = privilegios
+    else privilegiosList = [privilegios]
+
+    return {
+      name: directory.getNome(),
+      sizeInKB: directory.tamanho,
+      permissions: privilegiosList,
+      files: directory.files
+        .map(file => file.accept(this))
+        .filter(file => !!file),
+    }
   }
 }

@@ -1,6 +1,6 @@
 import { Getter } from 'tslombok'
 import { Host } from '../Contracts/Host'
-import { Visitor } from '../Contracts/Visitor'
+import { FileSystemInfo, Visitor } from '../Contracts/Visitor'
 import { calloc } from '../lib/memory'
 import { FileSystem } from './FileSystem'
 import { Privilegios, TiposPrivilegio } from './types/privilegios'
@@ -8,7 +8,7 @@ import { Privilegios, TiposPrivilegio } from './types/privilegios'
 export class File<
     TPrivilegio extends TiposPrivilegio = any,
     TUsersAccepted extends string = never,
-    TUsersMaxLength extends number = any,
+    TUsersMaxLength extends number = any
   >
   extends FileSystem<TPrivilegio, TUsersAccepted, TUsersMaxLength>
   implements Host
@@ -27,9 +27,9 @@ export class File<
   constructor(
     nome: string,
     conteudo: string,
-    privilegio: Privilegios<TPrivilegio, TUsersAccepted, TUsersMaxLength>,
+    privilegios: Privilegios<TPrivilegio, TUsersAccepted, TUsersMaxLength>
   ) {
-    super(nome, privilegio)
+    super(nome, privilegios)
 
     this.conteudo = conteudo
     this.tamanhoEmBytes = this.conteudo.length
@@ -39,11 +39,11 @@ export class File<
     this.fimPagina = end
   }
 
-  accept(visitor: Visitor) {
-    visitor.visitFile(this)
+  accept(visitor: Visitor): FileSystemInfo | null {
+    return visitor.visitFile(this)
   }
 
   get tamanho() {
-    return `${(this.tamanhoEmBytes / 1024).toFixed(2)} KB`
+    return parseFloat((this.tamanhoEmBytes / 1024).toFixed(2))
   }
 }

@@ -14,6 +14,6 @@ export class GithubAPI {
   async getUsers(): Promise<GithubUser[]> {
     return (await this.octokit.request('GET /users')).data
       .slice(0, 3)
-      .map(user => ({ id: user.id, login: user.login } satisfies GithubUser))
+      .map(user => ({ id: user.id, login: user.login }) satisfies GithubUser)
   }
 }

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:tns="http://localhost:8787/api/v1"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             targetNamespace="http://localhost:8787/api/v1">
+
+  <types>
+    <xsd:schema targetNamespace="http://localhost:8787/api/v1">
+      <xsd:complexType name="File">
+        <xsd:sequence>
+          <xsd:element name="name" type="xsd:string" />
+          <xsd:element name="size" type="xsd:decimal" />
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="Permission">
+        <xsd:sequence>
+          <xsd:element name="name" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="Directory">
+        <xsd:sequence>
+          <xsd:element name="name" type="xsd:string" />
+          <xsd:element name="size" type="xsd:decimal" />
+          <xsd:element name="permissions" type="tns:Permission" maxOccurs="unbounded" />
+          <xsd:element name="files" type="tns:File" maxOccurs="unbounded" />
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="GetDirectoriesResponse">
+        <xsd:sequence>
+          <xsd:element name="directories" type="tns:Directory" maxOccurs="unbounded" />
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </types>
+
+  <message name="GetDirectoriesRequest"></message>
+  <message name="GetDirectoriesResponse">
+    <part name="directories" element="tns:GetDirectoriesResponse" />
+  </message>
+
+  <portType name="DirectoryServicePortType">
+    <operation name="GetDirectories">
+      <input message="tns:GetDirectoriesRequest" />
+      <output message="tns:GetDirectoriesResponse" />
+    </operation>
+  </portType>
+
+  <binding name="DirectoryServiceSoapBinding" type="tns:DirectoryServicePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="GetDirectories">
+      <soap:operation soapAction="http://localhost:8787/api/v1/directories" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+  </binding>
+
+  <service name="DirectoryService">
+    <port name="DirectoryServicePort" binding="tns:DirectoryServiceSoapBinding">
+      <soap:address location="http://localhost:8787/api/v1" />
+    </port>
+  </service>
+</definitions>

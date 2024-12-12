@@ -1,5 +1,5 @@
 import { Host } from '../Contracts/Host'
-import { Visitor } from '../Contracts/Visitor'
+import { DirInfo, Visitor } from '../Contracts/Visitor'
 import { File } from './File'
 import { FileSystem } from './FileSystem'
 import { Privilegios, TiposPrivilegio } from './types/privilegios'
@@ -7,7 +7,7 @@ import { Privilegios, TiposPrivilegio } from './types/privilegios'
 export class Directory<
     TPrivilegio extends TiposPrivilegio = 'all',
     TUsersAccepted extends string = never,
-    TUsersMaxLength extends number = any,
+    TUsersMaxLength extends number = any
   >
   extends FileSystem<TPrivilegio, TUsersAccepted, TUsersMaxLength>
   implements Host
@@ -17,15 +17,15 @@ export class Directory<
   constructor(
     nome: string,
     files: File<TPrivilegio, TUsersAccepted, TUsersMaxLength>[],
-    privilegio: Privilegios<TPrivilegio, TUsersAccepted, TUsersMaxLength>,
+    privilegios: Privilegios<TPrivilegio, TUsersAccepted, TUsersMaxLength>
   ) {
-    super(nome, privilegio)
+    super(nome, privilegios)
 
     this._files = files
   }
 
-  accept(visitor: Visitor) {
-    visitor.visitDir(this)
+  accept(visitor: Visitor): DirInfo {
+    return visitor.visitDir(this)
   }
 
   get files() {
@@ -33,9 +33,11 @@ export class Directory<
   }
 
   get tamanho() {
-    return this._files
-      .map(file => parseFloat(file.tamanho))
-      .reduce((acc, cur) => (acc += cur))
-      .toFixed(2)
+    return parseFloat(
+      this._files
+        .map(file => file.tamanho)
+        .reduce((acc, cur) => (acc += cur))
+        .toFixed(2)
+    )
   }
 }
